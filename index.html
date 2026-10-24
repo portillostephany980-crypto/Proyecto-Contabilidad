@@ -1,310 +1,395 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Sistema profesional para calcular y graficar el punto de equilibrio." />
-  <title>BalancePoint Pro | Punto de Equilibrio</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Financiero, Punto de Equilibrio - Contabilidad II</title>
+    <!-- Librería para generar la gráfica -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #08032037;
+            margin: 20px;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Título con Análisis Financiero pequeño y Punto de Equilibrio grande */
+        .titulo-seccion {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .subtitulo-analisis {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #7f8c8d;
+            margin: 0;
+            font-weight: 600;
+        }
+        .titulo-principal {
+            font-size: 32px;
+            color: #2c3e50;
+            margin: 5px 0 0 0;
+            font-weight: bold;
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #343a5e;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-calcular {
+            flex: 2;
+            padding: 12px;
+            background-color: #2797ae;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-calcular:hover {
+            background-color: yellowgreen;
+        }
+        .btn-limpiar {
+            flex: 1;
+            padding: 12px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-limpiar:hover {
+            background-color: #c0392b;
+        }
+        .results {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #e8f8f5;
+            border-radius: 5px;
+            display: none;
+        }
+        .results p {
+            font-size: 18px;
+            margin: 8px 0;
+            color: #16a085;
+        }
+        .table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            text-align: right;
+        }
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 10px;
+            font-size: 14px;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+            text-align: center;
+        }
+        td:first-child {
+            text-align: left;
+            font-weight: bold;
+            background-color: #ecf0f1;
+        }
+        .highlight-pe {
+            background-color: #d4efdf !important;
+            font-weight: bold;
+        }
+        canvas {
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark">BP</div>
-        <div>
-          <h1>BalancePoint <span>PRO</span></h1>
-          <p>Contabilidad II</p>
-        </div>
-      </div>
 
-      <nav class="side-nav">
-        <a class="nav-item active" href="#dashboard">
-          <span class="nav-icon">⌂</span>
-          Dashboard
-        </a>
-        <a class="nav-item" href="#datos">
-          <span class="nav-icon">✎</span>
-          Datos
-        </a>
-        <a class="nav-item" href="#grafica">
-          <span class="nav-icon">⌁</span>
-          Gráfica
-        </a>
-        <a class="nav-item" href="#escenarios">
-          <span class="nav-icon">▤</span>
-          Escenarios
-        </a>
-      </nav>
+<div class="container">
+    <!-- Encabezado corregido -->
+    <div class="titulo-seccion">
+        <p class="subtitulo-analisis">Análisis Financiero</p>
+        <h1 class="titulo-principal">Punto de Equilibrio</h1>
+    </div>
+    
+    <!-- Orden de campos reordenados -->
+    <div class="form-group">
+        <label for="nombreEmpresa">Nombre de la Empresa o Producto:</label>
+        <input type="text" id="nombreEmpresa" placeholder="Ej. Panadería El Trigal">
+    </div>
 
-      <div class="sidebar-note">
-        <strong>Proyecto Final</strong>
-        <p>Sistema dinámico de punto de equilibrio en unidades y quetzales.</p>
-      </div>
-    </aside>
+    <div class="form-group">
+        <label for="precioVenta">Precio de Venta por Unidad (Q):</label>
+        <input type="text" id="precioVenta" placeholder="Ej. 25">
+    </div>
 
-    <main class="main-content" id="dashboard">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">ANÁLISIS FINANCIERO</p>
-          <h2>Punto de Equilibrio</h2>
-          <p class="subtitle">Ingresa tus datos y el sistema calculará resultados y gráfica automáticamente.</p>
-        </div>
-        <div class="top-actions">
-          <button class="btn btn-secondary" id="btnExample">Cargar ejemplo</button>
-          <button class="btn btn-primary" id="btnPrint">Imprimir reporte</button>
-        </div>
-      </header>
+    <div class="form-group">
+        <label for="costoVariable">Costo Variable por Unidad (Q):</label>
+        <input type="text" id="costoVariable" placeholder="Ej. 15">
+    </div>
 
-      <section class="status-strip">
-        <div class="status-dot"></div>
-        <span id="statusText">Listo para calcular</span>
-        <span class="status-time" id="statusTime"></span>
-      </section>
+    <div class="form-group">
+        <label for="costosFijos">Costos Fijos Totales (Q):</label>
+        <input type="text" id="costosFijos" placeholder="Ej. 5000">
+    </div>
 
-      <section class="grid-layout">
-        <article class="panel input-panel" id="datos">
-          <div class="panel-heading">
-            <div>
-              <span class="panel-kicker">ENTRADA DE DATOS</span>
-              <h3>Información del análisis</h3>
-            </div>
-            <span class="step-badge">01</span>
-          </div>
+    <div class="button-group">
+        <button type="button" id="btnCalcular" class="btn-calcular">Calcular, Graficar y Generar Tabla</button>
+        <button type="button" id="btnLimpiar" class="btn-limpiar">Limpiar Casillas</button>
+    </div>
 
-          <div class="form-grid">
-            <label class="field full">
-              <span>Nombre del usuario / analista</span>
-              <input id="analyst" type="text" placeholder="Ej. Ana López" maxlength="60">
-            </label>
+    <div class="results" id="resultados">
+        <h2 id="tituloEmpresa">Resultados</h2>
+        <p><strong>Margen de Contribución Unitario:</strong> Q <span id="resMargen">0.00</span></p>
+        <p><strong>Punto de Equilibrio en Unidades:</strong> <span id="resUnidades">0</span> unidades</p>
+        <p><strong>Punto de Equilibrio en Quetzales:</strong> Q <span id="resQuetzales">0.00</span></p>
+    </div>
 
-            <label class="field full">
-              <span>Empresa o negocio</span>
-              <input id="company" type="text" placeholder="Ej. Café Jalapa" maxlength="80">
-            </label>
+    <div class="table-container" id="seccionTabla">
+        <h3 id="subtituloTabla">Comportamiento por Nivel de Ventas</h3>
+        <table id="tablaValores"></table>
+    </div>
 
-            <label class="field full">
-              <span>Producto o servicio</span>
-              <input id="product" type="text" placeholder="Ej. Café frío premium" maxlength="80">
-            </label>
+    <canvas id="graficaEquilibrio"></canvas>
+</div>
 
-            <label class="field">
-              <span>Costos fijos mensuales (Q)</span>
-              <div class="money-input">
-                <b>Q</b>
-                <input id="fixedCosts" type="number" min="0" step="0.01" placeholder="0.00">
-              </div>
-              <small>Alquiler, salarios fijos, servicios, etc.</small>
-            </label>
+<script>
+    var miGrafica = null;
 
-            <label class="field">
-              <span>Precio de venta unitario (Q)</span>
-              <div class="money-input">
-                <b>Q</b>
-                <input id="salePrice" type="number" min="0" step="0.01" placeholder="0.00">
-              </div>
-              <small>Precio cobrado por cada unidad.</small>
-            </label>
+    function obtenerNumero(id) {
+        var el = document.getElementById(id);
+        if (!el) return NaN;
+        var val = el.value.trim().replace(',', '.');
+        return parseFloat(val);
+    }
 
-            <label class="field">
-              <span>Costo variable unitario (Q)</span>
-              <div class="money-input">
-                <b>Q</b>
-                <input id="variableCost" type="number" min="0" step="0.01" placeholder="0.00">
-              </div>
-              <small>Materia prima, comisión, empaque, etc.</small>
-            </label>
+    function calcularPuntoEquilibrio() {
+        try {
+            var empresaEl = document.getElementById('nombreEmpresa');
+            var empresa = empresaEl ? empresaEl.value.trim() : "";
+            
+            var cf = obtenerNumero('costosFijos');
+            var pv = obtenerNumero('precioVenta');
+            var cv = obtenerNumero('costoVariable');
 
-            <label class="field">
-              <span>Unidades proyectadas <em>(opcional)</em></span>
-              <input id="projectedUnits" type="number" min="0" step="1" placeholder="Ej. 800">
-              <small>Sirve para ampliar el rango de la gráfica.</small>
-            </label>
-          </div>
+            if (isNaN(cf) || isNaN(pv) || isNaN(cv)) {
+                alert("Por favor asegúrate de llenar todos los campos numéricos (Costos Fijos, Precio de Venta y Costo Variable).");
+                return;
+            }
 
-          <div class="validation-message" id="validationMessage"></div>
+            if (pv <= cv) {
+                alert("El precio de venta debe ser mayor al costo variable por unidad.");
+                return;
+            }
 
-          <div class="form-actions">
-            <button class="btn btn-primary btn-wide" id="btnCalculate">Calcular punto de equilibrio</button>
-            <button class="btn btn-ghost" id="btnClear">Limpiar</button>
-          </div>
-        </article>
+            var margenContribucion = pv - cv;
+            var peUnidades = cf / margenContribucion;
+            var peQuetzales = peUnidades * pv;
 
-        <section class="results-column">
-          <div class="metrics-grid">
-            <article class="metric-card">
-              <div class="metric-icon">U</div>
-              <p>Punto de equilibrio</p>
-              <strong id="bepUnits">—</strong>
-              <span>unidades exactas</span>
-            </article>
+            if (empresa !== "") {
+                document.getElementById('tituloEmpresa').textContent = 'Resultados: ' + empresa;
+                document.getElementById('subtituloTabla').textContent = 'Comportamiento por Nivel de Ventas - ' + empresa;
+            } else {
+                document.getElementById('tituloEmpresa').textContent = 'Resultados';
+                document.getElementById('subtituloTabla').textContent = 'Comportamiento por Nivel de Ventas';
+            }
 
-            <article class="metric-card featured">
-              <div class="metric-icon">Q</div>
-              <p>Ventas de equilibrio</p>
-              <strong id="bepMoney">—</strong>
-              <span>quetzales</span>
-            </article>
+            document.getElementById('resMargen').textContent = margenContribucion.toFixed(2);
+            document.getElementById('resUnidades').textContent = peUnidades.toLocaleString('es-GT', { maximumFractionDigits: 2 });
+            document.getElementById('resQuetzales').textContent = peQuetzales.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('resultados').style.display = 'block';
 
-            <article class="metric-card">
-              <div class="metric-icon">MC</div>
-              <p>Margen de contribución</p>
-              <strong id="contributionUnit">—</strong>
-              <span>por unidad</span>
-            </article>
+            var paso = Math.round(peUnidades * 0.16) || 1000; 
+            var nivelesUnidades = [
+                Math.max(0, peUnidades - (paso * 2)),
+                Math.max(0, peUnidades - paso),
+                peUnidades,
+                peUnidades + paso,
+                peUnidades + (paso * 2)
+            ];
 
-            <article class="metric-card">
-              <div class="metric-icon">%</div>
-              <p>Índice de contribución</p>
-              <strong id="contributionRatio">—</strong>
-              <span>sobre ventas</span>
-            </article>
-          </div>
+            var htmlTabla = '<thead><tr><th>Concepto</th>' +
+                '<th>' + nivelesUnidades[0].toLocaleString('es-GT') + ' u</th>' +
+                '<th>' + nivelesUnidades[1].toLocaleString('es-GT') + ' u</th>' +
+                '<th class="highlight-pe">' + nivelesUnidades[2].toLocaleString('es-GT') + ' u (PE)</th>' +
+                '<th>' + nivelesUnidades[3].toLocaleString('es-GT') + ' u</th>' +
+                '<th>' + nivelesUnidades[4].toLocaleString('es-GT') + ' u</th>' +
+                '</tr></thead><tbody>';
 
-          <article class="panel insight-panel">
-            <div class="panel-heading compact">
-              <div>
-                <span class="panel-kicker">INTERPRETACIÓN</span>
-                <h3>Lectura del resultado</h3>
-              </div>
-              <span class="step-badge">02</span>
-            </div>
-            <div class="insight-content" id="insightContent">
-              Completa los datos para obtener una interpretación automática.
-            </div>
-          </article>
-        </section>
-      </section>
+            var filas = [
+                { nombre: 'Ventas (Q)', calc: function(u) { return u * pv; } },
+                { nombre: '(-) Costos Variables (Q)', calc: function(u) { return u * cv; } },
+                { nombre: '(=) Margen de Contribución (Q)', calc: function(u) { return (u * pv) - (u * cv); } },
+                { nombre: '(-) Costos Fijos (Q)', calc: function(u) { return cf; } },
+                { nombre: '(=) Utilidad / Pérdida (Q)', calc: function(u) { return ((u * pv) - (u * cv)) - cf; } }
+            ];
 
-      <section class="panel chart-panel" id="grafica">
-        <div class="panel-heading">
-          <div>
-            <span class="panel-kicker">VISUALIZACIÓN</span>
-            <h3>Gráfica dinámica del punto de equilibrio</h3>
-            <p>Ingresos, costos totales y costos fijos según las cantidades registradas.</p>
-          </div>
-          <div class="legend">
-            <span><i class="legend-line revenue"></i> Ingresos</span>
-            <span><i class="legend-line total"></i> Costos totales</span>
-            <span><i class="legend-line fixed"></i> Costos fijos</span>
-          </div>
-        </div>
+            filas.forEach(function(fila) {
+                htmlTabla += '<tr><td>' + fila.nombre + '</td>';
+                nivelesUnidades.forEach(function(u, idx) {
+                    var valor = fila.calc(u);
+                    var esPE = (idx === 2);
+                    var clasePE = esPE ? 'class="highlight-pe"' : '';
+                    
+                    var valorFormateado = valor.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    if (valor < 0) {
+                        valorFormateado = '(Q ' + Math.abs(valor).toLocaleString('es-GT', { minimumFractionDigits: 2 }) + ')';
+                    } else {
+                        valorFormateado = 'Q ' + valorFormateado;
+                    }
 
-        <div class="chart-wrap">
-          <svg id="breakEvenChart" viewBox="0 0 1000 470" role="img" aria-label="Gráfica del punto de equilibrio"></svg>
-          <div class="chart-empty" id="chartEmpty">
-            <div class="empty-icon">⌁</div>
-            <strong>La gráfica aparecerá aquí</strong>
-            <span>Agrega costos fijos, precio de venta y costo variable unitario.</span>
-          </div>
-        </div>
+                    htmlTabla += '<td ' + clasePE + '>' + valorFormateado + '</td>';
+                });
+                htmlTabla += '</tr>';
+            });
 
-        <div class="chart-callout" id="chartCallout">
-          El cruce entre la línea de ingresos y costos totales representa el punto de equilibrio.
-        </div>
-      </section>
+            htmlTabla += '</tbody>';
+            document.getElementById('tablaValores').innerHTML = htmlTabla;
+            document.getElementById('seccionTabla').style.display = 'block';
 
-      <section class="detail-grid">
-        <article class="panel">
-          <div class="panel-heading compact">
-            <div>
-              <span class="panel-kicker">ANÁLISIS</span>
-              <h3>Comportamiento por nivel de ventas</h3>
-            </div>
-            <span class="step-badge">03</span>
-          </div>
+            if (typeof Chart !== 'undefined') {
+                var maxUnidades = Math.ceil(peUnidades * 2);
+                var incrementoGrafica = Math.ceil(maxUnidades / 8) || 1;
 
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nivel</th>
-                  <th>Unidades</th>
-                  <th>Ingresos</th>
-                  <th>Costos totales</th>
-                  <th>Utilidad / Pérdida</th>
-                </tr>
-              </thead>
-              <tbody id="analysisTable">
-                <tr>
-                  <td colspan="5" class="empty-cell">Sin datos calculados.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </article>
+                var etiquetas = [];
+                var datosVentas = [];
+                var datosCostosTotales = [];
+                var datosCostosFijos = [];
 
-        <article class="panel formula-panel">
-          <div class="panel-heading compact">
-            <div>
-              <span class="panel-kicker">FÓRMULAS</span>
-              <h3>Cómo calcula el sistema</h3>
-            </div>
-          </div>
+                for (var u = 0; u <= maxUnidades; u += incrementoGrafica) {
+                    etiquetas.push(u.toLocaleString('es-GT') + ' u');
+                    datosVentas.push(u * pv);
+                    datosCostosTotales.push(cf + (u * cv));
+                    datosCostosFijos.push(cf);
+                }
 
-          <div class="formula-list">
-            <div class="formula-item">
-              <span>Margen de contribución unitario</span>
-              <code>Precio de venta − Costo variable unitario</code>
-            </div>
-            <div class="formula-item">
-              <span>Punto de equilibrio en unidades</span>
-              <code>Costos fijos ÷ Margen de contribución unitario</code>
-            </div>
-            <div class="formula-item">
-              <span>Índice de contribución</span>
-              <code>Margen de contribución ÷ Precio de venta</code>
-            </div>
-            <div class="formula-item">
-              <span>Punto de equilibrio en quetzales</span>
-              <code>Costos fijos ÷ Índice de contribución</code>
-            </div>
-          </div>
-        </article>
-      </section>
+                var canvas = document.getElementById('graficaEquilibrio');
+                if (canvas) {
+                    var ctx = canvas.getContext('2d');
+                    if (miGrafica) {
+                        miGrafica.destroy();
+                    }
 
-      <section class="panel scenarios-panel" id="escenarios">
-        <div class="panel-heading">
-          <div>
-            <span class="panel-kicker">HISTORIAL LOCAL</span>
-            <h3>Escenarios guardados</h3>
-            <p>Se guardan solamente en este navegador. Cada usuario conserva sus propios datos en su equipo.</p>
-          </div>
-          <button class="btn btn-secondary" id="btnSaveScenario">Guardar escenario</button>
-        </div>
+                    var tituloGrafica = empresa !== "" ? 'Gráfica del Punto de Equilibrio - ' + empresa : 'Gráfica del Punto de Equilibrio';
 
-        <div class="scenario-grid" id="scenarioGrid">
-          <div class="scenario-empty">Todavía no hay escenarios guardados.</div>
-        </div>
-      </section>
+                    miGrafica = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: etiquetas,
+                            datasets: [
+                                {
+                                    label: 'Ventas (Ingresos)',
+                                    data: datosVentas,
+                                    borderColor: '#27ae60',
+                                    backgroundColor: '#27ae60',
+                                    fill: false
+                                },
+                                {
+                                    label: 'Costos Totales',
+                                    data: datosCostosTotales,
+                                    borderColor: '#e74c3c',
+                                    backgroundColor: '#e74c3c',
+                                    fill: false
+                                },
+                                {
+                                    label: 'Costos Fijos',
+                                    data: datosCostosFijos,
+                                    borderColor: '#f39c12',
+                                    borderDash: [5, 5],
+                                    fill: false
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: tituloGrafica
+                                }
+                            },
+                            scales: {
+                                y: { title: { display: true, text: 'Quetzales (Q)' } },
+                                x: { title: { display: true, text: 'Unidades' } }
+                            }
+                        }
+                    });
+                }
+            }
 
-      <footer>
-        <div>
-          <strong>BalancePoint Pro</strong>
-          <span>Sistema académico de análisis del punto de equilibrio.</span>
-        </div>
-        <span>Contabilidad II · Ingeniería en Sistemas</span>
-      </footer>
-    </main>
-  </div>
+        } catch (error) {
+            console.error(error);
+            alert("Ocurrió un error al procesar los datos: " + error.message);
+        }
+    }
 
-  <template id="scenarioTemplate">
-    <article class="scenario-card">
-      <div>
-        <span class="scenario-company"></span>
-        <strong class="scenario-product"></strong>
-      </div>
-      <div class="scenario-metrics">
-        <span><small>PE Unidades</small><b class="scenario-units"></b></span>
-        <span><small>PE Ventas</small><b class="scenario-money"></b></span>
-      </div>
-      <div class="scenario-actions">
-        <button class="mini-btn load">Cargar</button>
-        <button class="mini-btn danger delete">Eliminar</button>
-      </div>
-    </article>
-  </template>
+    function limpiarFormulario() {
+        document.getElementById('nombreEmpresa').value = '';
+        document.getElementById('costosFijos').value = '';
+        document.getElementById('precioVenta').value = '';
+        document.getElementById('costoVariable').value = '';
 
-  <script src="app.js"></script>
+        document.getElementById('resultados').style.display = 'none';
+        document.getElementById('seccionTabla').style.display = 'none';
+
+        if (miGrafica) {
+            miGrafica.destroy();
+            miGrafica = null;
+        }
+    }
+
+    // Eventos asignados directamente por script al cargar la página
+    window.onload = function() {
+        var btnCalcular = document.getElementById('btnCalcular');
+        var btnLimpiar = document.getElementById('btnLimpiar');
+
+        if (btnCalcular) {
+            btnCalcular.onclick = calcularPuntoEquilibrio;
+        }
+        if (btnLimpiar) {
+            btnLimpiar.onclick = limpiarFormulario;
+        }
+    };
+</script>
+
 </body>
 </html>
